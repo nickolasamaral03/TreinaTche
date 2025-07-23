@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'tela_cadastro_treino.dart';
+
 
 void main() {
   runApp(TreinoApp());
@@ -12,7 +14,7 @@ class TreinoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "TreinoTchê",
+      title: "TreineTchê",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
         useMaterial3: true,
@@ -37,7 +39,7 @@ class TelaInicial extends StatelessWidget {
             children: [
               SizedBox(height: 50),
               Text(
-                'Bem-vindo ao TreinoTchê',
+                'TreinaTchê',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 26,
@@ -46,7 +48,11 @@ class TelaInicial extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40),
-              BotaoPrincipal(titulo: 'Cadastrar Treino', onPressed: () {}),
+              BotaoPrincipal(titulo: 'Cadastrar Treino', onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => TelaCadastroTreino()),
+    );
+  },
+),
+
               BotaoPrincipal(titulo: 'Iniciar Treino', onPressed: () {}),
               BotaoPrincipal(titulo: 'Ver Progresso', onPressed: () {}),
               BotaoPrincipal(titulo: 'Resumo da Semana', onPressed: () {}),
