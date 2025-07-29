@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tela_cadastro_treino.dart';
-
+import 'CadastrarTreinoPage.dart'; // Importa a página de cadastro de exercícios
 
 void main() {
   runApp(TreinoApp());
@@ -48,7 +47,7 @@ class TelaInicial extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40),
-              BotaoPrincipal(titulo: 'Cadastrar Treino', onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => TelaCadastroTreino()),
+              BotaoPrincipal(titulo: 'Cadastrar Treino', onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (_) => CadastrarTreinoPage()),
     );
   },
 ),
