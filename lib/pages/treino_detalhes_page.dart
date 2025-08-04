@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
 import '../models/exercicio_model.dart';
 
 class TreinoDetalhesPage extends StatefulWidget {
@@ -11,7 +14,7 @@ class TreinoDetalhesPage extends StatefulWidget {
 }
 
 class _TreinoDetalhesPageState extends State<TreinoDetalhesPage> {
-  final List<ExercicioModel> exercicios = [];
+  final List<Treino> exercicios = [];
 
   final nomeController = TextEditingController();
   final seriesController = TextEditingController();
@@ -24,7 +27,7 @@ class _TreinoDetalhesPageState extends State<TreinoDetalhesPage> {
 
     if (nome.isNotEmpty && series > 0) {
       setState(() {
-        exercicios.add(ExercicioModel(
+        exercicios.add(Treino(
           nome: nome,
           series: series,
           peso: peso,
@@ -37,19 +40,46 @@ class _TreinoDetalhesPageState extends State<TreinoDetalhesPage> {
     }
   }
 
+  Future<void> salvarGrupoTreino() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final grupo = GrupoTreino(
+      nome: widget.nomeTreino,
+      horario: TimeOfDay.now().format(context),
+      treinos: exercicios,
+    );
+
+    final grupoJson = jsonEncode(grupo.toJson());
+
+    await prefs.setString('grupo_treino', grupoJson);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Grupo salvo com sucesso!')),
+    );
+
+    Navigator.pop(context); // Volta para tela anterior
+  }
+
   @override
   void dispose() {
     nomeController.dispose();
     seriesController.dispose();
     pesoController.dispose();
     super.dispose();
-  } // Limpa na memória os controladores quando a página é descartada 
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Treino: ${widget.nomeTreino}'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: salvarGrupoTreino,
+            tooltip: 'Salvar Grupo',
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -93,3 +123,4 @@ class _TreinoDetalhesPageState extends State<TreinoDetalhesPage> {
     );
   }
 }
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'CadastrarTreinoPage.dart'; // Importa a página de cadastro de exercícios
+import 'models/exercicio_model.dart'; // Importa os modelos de treino
 
 void main() {
   runApp(TreinoApp());
@@ -25,7 +26,14 @@ class TreinoApp extends StatelessWidget {
   }
 }
 
-class TelaInicial extends StatelessWidget {
+class TelaInicial extends StatefulWidget {
+  @override
+  State<TelaInicial> createState() => _TelaInicialState();
+}
+
+class _TelaInicialState extends State<TelaInicial> {
+  List<GrupoTreino> gruposTreino = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,10 +55,34 @@ class TelaInicial extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40),
-              BotaoPrincipal(titulo: 'Cadastrar Treino', onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (_) => CadastrarTreinoPage()),
-    );
-  },
-),
+              BotaoPrincipal(
+                titulo: 'Cadastrar Treinos',
+                onPressed: () async {
+                final novoGrupo = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => CadastrarTreinoPage()),
+                );
+
+                if (novoGrupo != null) {
+                  setState(() {
+                    gruposTreino.add(novoGrupo);
+                  });
+                }
+              },
+              ),
+
+               Expanded(
+                child: ListView.builder(
+                  itemCount: gruposTreino.length,
+                  itemBuilder: (context, index) {
+                    final grupo = gruposTreino[index];
+                    return ListTile(
+                      title: Text(grupo.nome),
+                      subtitle: Text('Horário: ${grupo.horario}'),
+                    );
+                  },
+                ),
+              ),
 
               BotaoPrincipal(titulo: 'Iniciar Treino', onPressed: () {}),
               BotaoPrincipal(titulo: 'Ver Progresso', onPressed: () {}),
@@ -62,6 +94,7 @@ class TelaInicial extends StatelessWidget {
     );
   }
 }
+
 
 class BotaoPrincipal extends StatelessWidget {
   final String titulo;
@@ -98,3 +131,5 @@ class BotaoPrincipal extends StatelessWidget {
     );
   }
 }
+
+// TREINOS SENDO SALVOS NO LOCAL STORAGE AGORA É APARECER NO FRONT PARA TESTE

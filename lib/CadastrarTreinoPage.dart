@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/treino_detalhes_page.dart'; // Importa a página de detalhes do treino
+import '../models/exercicio_model.dart'; // Ajuste o caminho se necessário
 
 class CadastrarTreinoPage extends StatefulWidget {
   @override
@@ -7,69 +7,108 @@ class CadastrarTreinoPage extends StatefulWidget {
 }
 
 class _CadastrarTreinoPageState extends State<CadastrarTreinoPage> {
-  final _nomeController = TextEditingController();
-  TimeOfDay? _horarioSelecionado;
+  final _nomeGrupoController = TextEditingController();
+  final _horarioController = TextEditingController();
+  final _nomeTreinoController = TextEditingController();
+  final _seriesController = TextEditingController();
+  final _pesoController = TextEditingController();
 
-  void _selecionarHorario() async {
-    final TimeOfDay? horario = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
+  List<Treino> _treinos = [];
 
-    if (horario != null) {
+  void _adicionarTreino() {
+    final nome = _nomeTreinoController.text;
+    final series = int.tryParse(_seriesController.text);
+    final peso = double.tryParse(_pesoController.text);
+
+    if (nome.isNotEmpty && series != null && peso != null) {
       setState(() {
-        _horarioSelecionado = horario;
+        _treinos.add(
+          Treino(nome: nome, series: series, peso: peso),
+        );
       });
+
+      _nomeTreinoController.clear();
+      _seriesController.clear();
+      _pesoController.clear();
     }
   }
 
-  void _salvarTreino() {
-    final nomeTreino = _nomeController.text.trim();
+  void _salvarGrupoTreino() {
+    final nomeGrupo = _nomeGrupoController.text;
+    final horario = _horarioController.text;
 
-    if (nomeTreino.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor, insira o nome do treino.')),
+    if (nomeGrupo.isNotEmpty && horario.isNotEmpty && _treinos.isNotEmpty) {
+      final grupo = GrupoTreino(
+        nome: nomeGrupo,
+        horario: horario,
+        treinos: _treinos,
       );
-      return;
-    }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TreinoDetalhesPage(nomeTreino: nomeTreino),
-      ),
-    );
+      Navigator.pop(context, grupo); // Retorna para a tela inicial com o grupo
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cadastrar Treino')),
+      appBar: AppBar(title: Text('Cadastrar Grupo de Treino')),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
-              controller: _nomeController,
-              decoration: InputDecoration(labelText: 'Nome do Treino'),
+              controller: _nomeGrupoController,
+              decoration: InputDecoration(labelText: 'Nome do Grupo de Treino'),
+            ),
+            TextField(
+              controller: _horarioController,
+              decoration: InputDecoration(labelText: 'Horário'),
             ),
             SizedBox(height: 20),
+            TextField(
+              controller: _nomeTreinoController,
+              decoration: InputDecoration(labelText: 'Nome do Exercício'),
+            ),
             Row(
               children: [
-                Text(
-                  _horarioSelecionado == null
-                      ? 'Horário não selecionado'
-                      : 'Horário: ${_horarioSelecionado!.format(context)}',
+                Expanded(
+                  child: TextField(
+                    controller: _seriesController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: 'Séries'),
+                  ),
                 ),
-                Spacer(),
-                ElevatedButton(
-                  onPressed: _selecionarHorario,
-                  child: Text('Selecionar Horário'),
+                SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _pesoController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: 'Peso (kg)'),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 30),
-            ElevatedButton(onPressed: _salvarTreino, child: Text('Próximo')),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _adicionarTreino,
+              child: Text('Adicionar Exercício'),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _treinos.length,
+                itemBuilder: (context, index) {
+                  final treino = _treinos[index];
+                  return ListTile(
+                    title: Text('${treino.nome} - ${treino.series}x - ${treino.peso}kg'),
+                  );
+                },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: _salvarGrupoTreino,
+              child: Text('Salvar Grupo de Treino'),
+            ),
           ],
         ),
       ),
